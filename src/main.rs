@@ -14,7 +14,7 @@ fn main() {
     if let Some(script_name) = get_script_name() {
         let prg = fs::read_to_string(script_name).expect("Can't read assembly script file");
         let program = AssemblerParser::parse_program(prg.as_str()).expect("Syntax error");
-        let mut process = ExecutingContext::new(&program);
+        let mut process = ExecutionContext::new(&program);
         process.execute();
     }
 }

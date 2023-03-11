@@ -4,7 +4,7 @@ use super::*;
 use text_io::read;
 
 #[derive(Debug)]
-pub struct ExecutingContext<'a> {
+pub struct ExecutionContext<'a> {
     program: &'a Program,
     ip: IP,
     stack: Vec<i32>,
@@ -12,9 +12,9 @@ pub struct ExecutingContext<'a> {
     flags: Flags,
 }
 
-impl ExecutingContext<'_> {
-    pub fn new(prg: &Program) -> ExecutingContext {
-        ExecutingContext {
+impl ExecutionContext<'_> {
+    pub fn new(prg: &Program) -> ExecutionContext {
+        ExecutionContext {
             program: prg,
             ip: 0,
             stack: Vec::with_capacity(256),
