@@ -1,0 +1,74 @@
+
+    println "Function evaluator"
+
+main_loop:
+    call    select_func
+    cmp     func_n, 0
+    je      end
+    print   "Enter X: "
+    read    ax
+    cmp     func_n, 1
+    jne     main_f2
+    call    func_f1
+    jmp     print_res
+main_f2:
+    cmp     func_n, 2
+    jne     main_f3
+    call    func_f2
+    jmp     print_res
+main_f3:
+    cmp     func_n, 3
+    jne     main_f4
+    call    sqrt_int
+    jmp     print_res
+main_f4:
+    print   "Invalid function number!"
+    jmp     main_loop
+
+print_res:
+    print   "F(x)="
+    println ax
+    println ""
+    jmp     main_loop
+
+select_func:
+    println "Select a function:"
+    println "1. y=x^2+1"
+    println "2. y=2x-4"
+    println "3. y=trunc(sqrt(x))"
+    println "0. exit"
+    print   "> "
+    read    func_n
+    ret
+
+func_f1:
+    mul     ax, ax
+    inc     ax
+    ret
+
+func_f2:
+    mul     ax, 2
+    sub     ax, 4
+    ret
+
+sqrt_int:
+    push    cx
+    push    dx
+    mov     cx, 1
+    mov     dx, 0
+sqrt_while:
+    cmp     ax, 0
+    jle     sqrt_ret
+    sub     ax, cx
+    add     cx, 2
+    cmp     ax, 0
+    jl      sqrt_while
+    inc     dx
+    jmp     sqrt_while
+sqrt_ret:
+    mov     ax, dx
+    pop     dx
+    pop     cx
+    ret
+
+end:

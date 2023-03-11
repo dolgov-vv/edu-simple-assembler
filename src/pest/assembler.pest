@@ -1,0 +1,93 @@
+//
+// Created by intellij-pest on 2022-01-03
+// assembler
+// Author: dolgov_vv
+//
+
+WHITESPACE = _{ " " | "\t" }
+space = _{ WHITESPACE }
+plus_or_minus = { ("-" | "+")? }
+
+number = @{	plus_or_minus ~	ASCII_DIGIT+ }
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+label = ${ ident ~ ":" }
+string = ${ "\"" ~ inner ~ "\"" }
+inner = @{ char* }
+char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+mov_verb = { ^"mov" }
+add_verb = { ^"add" }
+sub_verb = { ^"sub" }
+mul_verb = { ^"mul" }
+div_verb = { ^"div" }
+cmp_verb = { ^"cmp" }
+inc_verb = { ^"inc" }
+dec_verb = { ^"dec" }
+push_verb = { ^"push" }
+pop_verb = { ^"pop" }
+jmp_verb = { ^"jmp" }
+je_verb = { ^"je" }
+jne_verb = { ^"jne" }
+jl_verb = { ^"jl" }
+jle_verb = { ^"jle" }
+jg_verb = { ^"jg" }
+jge_verb = { ^"jge" }
+loop_verb = { ^"loop" }
+call_verb = { ^"call" }
+ret_verb = { ^"ret" }
+print_verb = { ^"print" }
+println_verb = { ^"println" }
+read_verb = { ^"read" }
+
+unit_operation = _{ ret_verb }
+
+unary_reg_operation = _{ inc_verb | dec_verb | pop_verb | read_verb }
+unary_regnum_operation = _{ push_verb }
+unary_regstr_operation = _{ println_verb | print_verb }
+unary_ip_operation = _{
+    call_verb | jmp_verb |
+    jle_verb | jge_verb | jne_verb |
+    jl_verb | je_verb | jg_verb
+}
+
+binary_reg_regnum_operation = _{ mov_verb | add_verb | sub_verb | mul_verb | div_verb | cmp_verb }
+binary_reg_ip_operation = _{ loop_verb }
+
+operation = _{
+    unit_operation |
+    unary_reg_operation |
+    unary_regnum_operation |
+    unary_regstr_operation |
+    unary_ip_operation |
+    binary_reg_regnum_operation |
+    binary_reg_ip_operation
+}
+
+unit_command = ${ unit_operation }
+
+unary_reg_command = ${ unary_reg_operation ~ space+ ~ ident }
+unary_regnum_command = ${ unary_regnum_operation ~ space+ ~ (ident | number) }
+unary_regstr_command = ${ unary_regstr_operation ~ space+ ~ (ident | string) }
+unary_ip_command = ${ unary_ip_operation ~ space+ ~ ident }
+
+binary_reg_regnum_command = ${ binary_reg_regnum_operation ~ space+ ~ ident ~ space* ~ "," ~ space* ~ (ident | number) }
+binary_reg_ip_command = ${ binary_reg_ip_operation ~ space+ ~ ident ~ space* ~ "," ~ space* ~ ident}
+
+command = ${
+    unit_command |
+    unary_reg_command | unary_regnum_command |
+    unary_regstr_command | unary_ip_command |
+    binary_reg_regnum_command |
+    binary_reg_ip_command
+}
+command_or_label = _{ command | label }
+
+program = _{
+    SOI ~ NEWLINE* ~
+    command_or_label ~ (NEWLINE+ ~ command_or_label)* ~
+    NEWLINE* ~ EOI
+}

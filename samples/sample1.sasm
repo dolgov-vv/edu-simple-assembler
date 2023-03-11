@@ -1,0 +1,20 @@
+
+    print "Input initial AX: "
+    read ax
+    mov bx, 2
+    mov cx, 5
+L1:
+    call do_math
+    print "ax="
+    print ax
+    println ""
+    loop cx, L1
+
+    jmp end
+
+do_math:
+    add ax, bx
+    inc ax
+    ret
+
+end:
