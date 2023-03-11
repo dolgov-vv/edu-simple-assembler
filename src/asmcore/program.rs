@@ -32,10 +32,6 @@ impl Program {
         self.commands.get(ip)
     }
 
-    pub fn set_labels(&mut self, labels: impl Iterator<Item = (Label, IP)>) {
-        self.labels = HashMap::from_iter(labels);
-    }
-
     pub fn set_label(&mut self, label: Label, ip: IP) {
         self.labels.insert(label, ip);
     }
